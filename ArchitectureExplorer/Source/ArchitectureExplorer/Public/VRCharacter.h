@@ -32,6 +32,9 @@ private:
 	void MoveForward(float throttle);
 	void MoveRight(float throttle);
 
+	void BeginTeleport();
+	void FinishTeleport();
+
 private:
 	UPROPERTY(VisibleAnywhere)
 		class USceneComponent* VRRoot;
@@ -45,4 +48,7 @@ private:
 private:
 	UPROPERTY(EditAnywhere)
 		float MaxTeleportDistance = 1000;
+
+	UPROPERTY(EditAnywhere)
+		float TeleportFadeTime = 1;
 };
