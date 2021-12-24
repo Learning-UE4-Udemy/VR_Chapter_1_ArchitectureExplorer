@@ -48,6 +48,12 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* DestinationMarker;
 
+	UPROPERTY()
+		class UPostProcessComponent* PostProcessComponent;
+
+	UPROPERTY()
+		class UMaterialInstanceDynamic* BlinkerMaterialInstance;
+
 private:
 	UPROPERTY(EditAnywhere)
 		float MaxTeleportDistance = 1000;
@@ -57,4 +63,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 		FVector TeleportProjectionExtent = FVector(100, 100, 100);
+
+	UPROPERTY(EditAnywhere)
+		class UMaterialInterface* BlinkerMaterialBase;
 };
