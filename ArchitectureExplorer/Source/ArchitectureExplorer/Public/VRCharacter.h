@@ -27,6 +27,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
+	bool FindTeleportDestination(FVector& OutLocation);
 	void UpdateDestinationMarker();
 
 	void MoveForward(float throttle);
@@ -34,6 +35,8 @@ private:
 
 	void BeginTeleport();
 	void FinishTeleport();
+
+	void StartFade(float FromAlpha, float ToAlpha);
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -51,4 +54,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 		float TeleportFadeTime = 1;
+
+	UPROPERTY(EditAnywhere)
+		FVector TeleportProjectionExtent = FVector(100, 100, 100);
 };
