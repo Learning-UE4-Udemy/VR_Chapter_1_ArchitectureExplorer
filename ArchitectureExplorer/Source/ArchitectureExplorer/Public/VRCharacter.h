@@ -48,6 +48,12 @@ private:
 		class UCameraComponent* Camera;
 
 	UPROPERTY(VisibleAnywhere)
+		class UMotionControllerComponent* LeftController;
+
+	UPROPERTY(VisibleAnywhere)
+		class UMotionControllerComponent* RightController;
+
+	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* DestinationMarker;
 
 	UPROPERTY()
@@ -70,5 +76,5 @@ private:
 		class UMaterialInterface* BlinkerMaterialBase;
 
 	UPROPERTY(EditAnywhere)
-	class UCurveFloat* RadiusVsVelocity;
+		class UCurveFloat* RadiusVsVelocity;
 };
