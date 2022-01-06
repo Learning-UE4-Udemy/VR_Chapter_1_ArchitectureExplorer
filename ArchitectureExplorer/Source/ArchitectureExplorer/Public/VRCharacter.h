@@ -30,6 +30,7 @@ private:
 	bool FindTeleportDestination(FVector& OutLocation);
 	void UpdateDestinationMarker();
 	void UpdateBlinkers();
+	FVector2D GetBlinkerCentre();
 
 	void MoveForward(float throttle);
 	void MoveRight(float throttle);
