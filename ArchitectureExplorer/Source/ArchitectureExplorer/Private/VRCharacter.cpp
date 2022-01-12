@@ -14,6 +14,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
+#include "HandController.h"
 
 // Sets default values
 AVRCharacter::AVRCharacter()
@@ -27,16 +28,8 @@ AVRCharacter::AVRCharacter()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(VRRoot);
 
-	LeftController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("LeftController"));
-	LeftController->SetupAttachment(VRRoot);
-	LeftController->SetTrackingSource(EControllerHand::Left);
-
-	RightController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("RightController"));
-	RightController->SetupAttachment(VRRoot);
-	RightController->SetTrackingSource(EControllerHand::Right);
-
 	TeleportPath = CreateDefaultSubobject<USplineComponent>(TEXT("TeleportPath"));
-	TeleportPath->SetupAttachment(RightController);
+	TeleportPath->SetupAttachment(VRRoot);
 
 	DestinationMarker = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DestinationMarker"));
 	DestinationMarker->SetupAttachment(GetRootComponent());
@@ -57,7 +50,19 @@ void AVRCharacter::BeginPlay()
 		PostProcessComponent->AddOrUpdateBlendable(BlinkerMaterialInstance);
 	}
 
+	LeftController = GetWorld()->SpawnActor<AHandController>(HandControllerClass);
+	if (LeftController != nullptr) {
+		LeftController->AttachToComponent(VRRoot, FAttachmentTransformRules::KeepRelativeTransform);
+		LeftController->SetHand(EControllerHand::Left);
+		LeftController->SetOwner(this);
+	}
 
+	RightController = GetWorld()->SpawnActor<AHandController>(HandControllerClass);
+	if (RightController != nullptr) {
+		RightController->AttachToComponent(VRRoot, FAttachmentTransformRules::KeepRelativeTransform);
+		RightController->SetHand(EControllerHand::Right);
+		RightController->SetOwner(this);
+	}
 }
 
 // Called every frame
@@ -75,8 +80,9 @@ void AVRCharacter::Tick(float DeltaTime)
 }
 
 bool AVRCharacter::FindTeleportDestination(TArray<FVector>& OutPath, FVector& OutLocation) {
-	FVector Start = RightController->GetComponentLocation();
-	FVector Look = RightController->GetForwardVector();
+
+		FVector Start = RightController->GetActorLocation();
+		FVector Look = RightController->GetActorForwardVector();
 
 	FPredictProjectilePathParams Params(
 		TeleportProjectileRadius,
@@ -120,7 +126,7 @@ void AVRCharacter::UpdateDestinationMarker() {
 	}
 	else {
 		DestinationMarker->SetVisibility(false);
-		
+
 		TArray<FVector> EmptyPath;
 		DrawTeleportPath(EmptyPath);
 	}
@@ -236,7 +242,7 @@ void AVRCharacter::BeginTeleport() {
 
 void AVRCharacter::FinishTeleport() {
 	FVector Destination = DestinationMarker->GetComponentLocation();
-	Destination += GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * GetActorUpVector();	
+	Destination += GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * GetActorUpVector();
 	SetActorLocation(Destination);
 
 	StartFade(1, 0);
