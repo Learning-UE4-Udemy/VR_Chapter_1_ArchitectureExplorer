@@ -29,7 +29,6 @@ public:
 
 private:
 	// Callbacks
-
 	UFUNCTION()
 		void ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
 
@@ -37,13 +36,15 @@ private:
 		void ActorEndOverlap(AActor* OverlappedActor, AActor* OtherActor);
 
 	// Helpers
-
 	bool CanClimb() const;
-
 
 	// Default sub object
 	UPROPERTY(VisibleAnywhere)
 		UMotionControllerComponent* MotionController;
+
+	// Parameters
+	UPROPERTY(EditDefaultsOnly)
+		class UHapticFeedbackEffect_Base* HapticEffect;
 
 	// State
 	bool bCanClimb = false;

@@ -3,6 +3,9 @@
 
 #include "HandController.h"
 
+#include "GameFramework/Pawn.h"
+#include "GameFramework/PlayerController.h"
+
 
 // Sets default values
 AHandController::AHandController() {
@@ -29,7 +32,15 @@ void AHandController::Tick(float DeltaTime) {
 void AHandController::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor) {
 	bool bNewCanClimb = CanClimb();
 	if (!bCanClimb && bNewCanClimb) {
-		UE_LOG(LogTemp, Warning, TEXT("Can Climb!"));
+		//UE_LOG(LogTemp, Warning, TEXT("Can Climb!"));
+
+		APawn* Pawn = Cast<APawn>(GetAttachParentActor());
+		if (Pawn != nullptr) {
+			APlayerController* Controller = Cast<APlayerController>(Pawn->GetController());
+			if (Controller != nullptr) {
+				Controller->PlayHapticEffect(HapticEffect, MotionController->GetTrackingSource());
+			}
+		}
 	}
 	bCanClimb = bNewCanClimb;
 }
@@ -41,7 +52,7 @@ void AHandController::ActorEndOverlap(AActor* OverlappedActor, AActor* OtherActo
 bool AHandController::CanClimb() const {
 	TArray<AActor*> OverlappingActors;
 	GetOverlappingActors(OverlappingActors);
-	
+
 	for (AActor* OverlappingActor : OverlappingActors) {
 		if (OverlappingActor->ActorHasTag(TEXT("Climbable"))) {
 			return true;
