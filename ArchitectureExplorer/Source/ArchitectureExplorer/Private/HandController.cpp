@@ -5,6 +5,8 @@
 
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 // Sets default values
@@ -33,7 +35,6 @@ void AHandController::Tick(float DeltaTime) {
 
 		GetAttachParentActor()->AddActorWorldOffset(-HandControllerDelta);
 	}
-
 }
 
 void AHandController::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor) {
@@ -74,8 +75,27 @@ void AHandController::Grip() {
 	if (!bIsClimbing) {
 		bIsClimbing = true;
 		ClimbingStartLocation = GetActorLocation();
+
+		OtherController->bIsClimbing = false;
+
+		ACharacter* Character = Cast<ACharacter>(GetAttachParentActor());
+		if (Character != nullptr) {
+			Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+		}
 	}
 }
 void AHandController::Release() {
-	bIsClimbing = false;
+	if (bIsClimbing) {
+		bIsClimbing = false;
+
+		ACharacter* Character = Cast<ACharacter>(GetAttachParentActor());
+		if (Character != nullptr) {
+			Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Falling);
+		}
+	}
+}
+
+void AHandController::PairController(AHandController* Controller){
+	 OtherController = Controller;
+	 OtherController->OtherController = this;
 }
